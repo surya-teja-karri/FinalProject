@@ -50,3 +50,25 @@ selected_seasons = st.sidebar.multiselect("Seasons", list(season_options.keys())
 weather_options = {1: "snowy", 2: "Mist", 3: "Clear"}
 weather = st.sidebar.selectbox("Weather", list(weather_options.keys()), format_func=lambda x: weather_options[x])
 forecast_type = st.sidebar.selectbox("Choose Forecast Type", ["Count", "Profit"])
+
+# Dropdowns for additional parameters
+day_type = st.sidebar.multiselect("Day Type", ["Holiday", "Working Day"], default=["Holiday", "Working Day"])
+
+# Extract time-related features from the datetime column for filtering
+df['datetime'] = pd.to_datetime(df['datetime'])
+df['hour'] = df['datetime'].dt.hour
+df['day_of_week'] = df['datetime'].dt.dayofweek
+df['month'] = df['datetime'].dt.month
+df['year'] = df['datetime'].dt.year
+
+# Filter data based on user inputs
+filtered_data = df[
+    (df['season'].isin(selected_seasons)) & 
+    (df['weather'] == weather) & 
+    (((df['holiday'] == 1) & ("Holiday" in day_type)) | ((df['workingday'] == 1) & ("Working Day" in day_type)))
+]
+
+# Hour selection in sidebar using a slider
+hour_range = st.sidebar.slider("Select Hour Range", min_value=0, max_value=23, value=(0, 23))
+filtered_data = filtered_data[(filtered_data['hour'] >= hour_range[0]) & (filtered_data['hour'] <= hour_range[1])]
+
