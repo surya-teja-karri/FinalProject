@@ -30,3 +30,23 @@ def calculate_profit(x):
     total_profit = profit_with_taxes - maintenance_per_hour
 
     return total_profit
+
+# Function to calculate count (total rentals)
+def calculate_count(x):
+    return x['casual'] + x['registered']
+
+# Add profit and count columns to the DataFrame
+df['Profit'] = df[['casual', 'registered']].apply(calculate_profit, axis=1)
+df['Count'] = df[['casual', 'registered']].apply(calculate_count, axis=1)
+
+# Streamlit app
+st.title("Bike Rental Forecasting with Different Profit Model")
+
+# Sidebar with user inputs
+st.sidebar.header("Choose Parameters")
+season_options = {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
+selected_seasons = st.sidebar.multiselect("Seasons", list(season_options.keys()), default=[1, 2, 3, 4], format_func=lambda x: season_options[x])
+#weather_options = {1: "Clear", 2: "Mist", 3: "Snow"}
+weather_options = {1: "snowy", 2: "Mist", 3: "Clear"}
+weather = st.sidebar.selectbox("Weather", list(weather_options.keys()), format_func=lambda x: weather_options[x])
+forecast_type = st.sidebar.selectbox("Choose Forecast Type", ["Count", "Profit"])
