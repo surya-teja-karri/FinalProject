@@ -71,4 +71,32 @@ filtered_data = df[
 # Hour selection in sidebar using a slider
 hour_range = st.sidebar.slider("Select Hour Range", min_value=0, max_value=23, value=(0, 23))
 filtered_data = filtered_data[(filtered_data['hour'] >= hour_range[0]) & (filtered_data['hour'] <= hour_range[1])]
+# Check if 'datetime' is in the columns before using it
+if 'datetime' in filtered_data.columns:
+    filtered_data['datetime'] = pd.to_datetime(filtered_data['datetime'])
+    filtered_data.set_index('datetime', inplace=True)
 
+# Display the filtered data (showing only 10 rows)
+st.subheader("Filtered Data (First 10 Rows)")
+st.write(filtered_data.head(10))
+
+# Profit forecasting using Random Forest
+X_rf = filtered_data[['weather','holiday', 'workingday', 'casual', 'registered', 'temp', 'season', 'atemp', 'windspeed', 'humidity', 'hour', 'day_of_week', 'month', 'year']]
+y_rf = filtered_data['Profit']
+
+# Split the data into training and testing sets
+X_train_rf, X_test_rf, y_train_rf, y_test_rf = train_test_split(X_rf, y_rf, test_size=0.2, random_state=42)
+
+# Train the Random Forest model for profit forecasting
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_model.fit(X_train_rf, y_train_rf)
+
+# Predictions
+profit_predictions_rf = rf_model.predict(X_test_rf)
+
+# Calculate mean squared error as a measure of performance
+mse_rf = mean_squared_error(y_test_rf, profit_predictions_rf)
+
+# Show the performance metrics for Random Forest
+st.subheader("Performance Metrics (Random Forest)")
+st.write(f"Mean Squared Error: {mse_rf:.2f}")
