@@ -138,3 +138,19 @@ plt.legend()
 
 # Show numerical annotations for the mean value for ARIMA
 plt.annotate(f'Mean (ARIMA): {mean_value:.2f}', (forecast_df.index[-1], mean_value), textcoords="offset points", xytext=(0, 10), ha='center')
+
+# Triple Exponential Smoothing (Holt-Winters' Method)
+data_s = filtered_data[forecast_type].copy()
+model_hw = ExponentialSmoothing(data_s, seasonal_periods=12, trend="add", seasonal="add", use_boxcox=True).fit()
+forecast_hw = model_hw.forecast(steps=future_steps)
+
+# Plot forecast for Triple Exponential Smoothing
+st.subheader(f"{forecast_type} Forecast (Triple Exponential Smoothing)")
+plt.figure(figsize=(10, 5))
+plt.plot(arima_data.index, arima_data[forecast_type], label=f'Historical {forecast_type}', color='LightBlue')
+#plt.plot(forecast_df.index, forecast_df['Forecast'], label=f'ARIMA Forecasted {forecast_type}', linestyle='dashed', color='Green')
+plt.plot(forecast_index, forecast_hw, label=f'Triple Exponential Smoothing Forecasted {forecast_type}', linestyle='dashed', color='Orange', linewidth=2)  # Adjust linewidth
+plt.xlabel('Datetime')
+plt.ylabel(f'{forecast_type}')
+plt.legend()
+
