@@ -100,3 +100,30 @@ mse_rf = mean_squared_error(y_test_rf, profit_predictions_rf)
 # Show the performance metrics for Random Forest
 st.subheader("Performance Metrics (Random Forest)")
 st.write(f"Mean Squared Error: {mse_rf:.2f}")
+
+
+# Forecasting using ARIMA
+# Example: Including more columns for ARIMA forecasting
+arima_data = filtered_data[['weather', 'holiday','workingday', 'windspeed', 'casual', 'registered', 'temp', 'season', 'atemp', 'humidity', 'hour', 'day_of_week', 'month', 'year', forecast_type]]
+if 'datetime' in arima_data.columns:
+    arima_data['datetime'] = pd.to_datetime(arima_data['datetime'])
+    arima_data.set_index('datetime', inplace=True)
+
+X_arima = arima_data.drop(columns=[forecast_type])
+y_arima = arima_data[forecast_type]
+
+# Split the data into training and testing sets
+X_train_arima, X_test_arima, y_train_arima, y_test_arima = train_test_split(X_arima, y_arima, test_size=0.2, random_state=42)
+
+# Train the ARIMA model for forecasting
+arima_model = ARIMA(y_train_arima, order=(2, 2, 2))
+arima_results = arima_model.fit()
+
+# Predictions
+future_steps = 300
+forecast_index = pd.date_range(arima_data.index[-1], periods=future_steps + 1, freq='D')[1:]
+forecast_df = pd.DataFrame({'Forecast': arima_results.get_forecast(steps=future_steps).predicted_mean.values}, index=forecast_index)
+
+# Calculate the mean value of the forecast
+mean_value = forecast_df['Forecast'].mean()
+
