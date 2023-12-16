@@ -127,3 +127,14 @@ forecast_df = pd.DataFrame({'Forecast': arima_results.get_forecast(steps=future_
 # Calculate the mean value of the forecast
 mean_value = forecast_df['Forecast'].mean()
 
+# Plot forecast for Triple Exponential Smoothing
+st.subheader(f"{forecast_type} Forecast (ARIMA)")
+plt.figure(figsize=(10, 5))
+plt.plot(arima_data.index, arima_data[forecast_type], label=f'Historical {forecast_type}', color='LightBlue')
+plt.plot(forecast_df.index, forecast_df['Forecast'], label=f'Forecasted {forecast_type} (ARIMA)', linestyle='dashed', color='Green')
+plt.xlabel('Datetime')
+plt.ylabel(f'{forecast_type}')
+plt.legend()
+
+# Show numerical annotations for the mean value for ARIMA
+plt.annotate(f'Mean (ARIMA): {mean_value:.2f}', (forecast_df.index[-1], mean_value), textcoords="offset points", xytext=(0, 10), ha='center')
