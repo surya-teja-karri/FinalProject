@@ -154,3 +154,26 @@ plt.xlabel('Datetime')
 plt.ylabel(f'{forecast_type}')
 plt.legend()
 
+
+# Show numerical annotations for the mean value for Triple Exponential Smoothing
+plt.annotate(f'Mean (Triple Exponential Smoothing): {forecast_hw.mean():.2f}', (forecast_index[-1], forecast_hw.mean()), textcoords="offset points", xytext=(0, 10), ha='center')
+
+st.pyplot(plt)
+
+# Show parameters and forecast data
+st.subheader(f"{forecast_type} Forecast Data (ARIMA)")
+st.write(forecast_df)
+
+# Show parameters and forecast data for Triple Exponential Smoothing
+# st.subheader(f"{forecast_type} Forecast Data (Triple Exponential Smoothing)")
+# st.write(pd.DataFrame({'Forecast': forecast_hw}, index=forecast_index))
+
+# Show rentals during working day and holiday
+st.subheader("Rentals During Working Day & Holiday")
+working_day_data = df[df['workingday'] == 1]
+holiday_data = df[df['holiday'] == 1]
+st.write("Working Day Data:")
+st.write(working_day_data)
+st.write("Holiday Data:")
+st.write(holiday_data)
+
